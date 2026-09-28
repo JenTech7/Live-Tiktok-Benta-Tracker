@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>LIVE BENTA TRACKER</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf7f4;--card:#fff;--tx:#2f2f33;--mu:#8a7f80;--pk:#f6d5da;--rose:#c9848f;--lt:#fdeef0;--bd:#efdfe1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1f1b1c;--card:#2a2526;--tx:#f3eaea;--mu:#b5a6a8;--pk:#4a3438;--rose:#e0a0aa;--lt:#352a2c;--bd:#463a3c}}
+:root[data-theme=dark]{--bg:#1f1b1c;--card:#2a2526;--tx:#f3eaea;--mu:#b5a6a8;--pk:#4a3438;--rose:#e0a0aa;--lt:#352a2c;--bd:#463a3c}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Poppins,system-ui,sans-serif;font-size:14px}
+.w{max-width:1000px;margin:auto;padding:14px}
+h1{font-size:22px;margin:4px 0}h2{font-size:17px;margin:18px 0 8px}h1,h2,b{font-weight:600}
+.sub{color:var(--mu);font-size:12px;margin:0 0 10px}
+nav{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:8px 0;z-index:5}
+button,select,input{font:inherit;color:var(--tx)}
+nav button,.btn{border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:8px 12px;cursor:pointer}
+nav button.on,.btn.pri{background:var(--rose);color:#fff;border-color:var(--rose)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px}
+.card small{color:var(--mu);display:block}.card b{font-size:20px}
+.big{padding:18px;text-align:left;font-size:15px}
+.fin{background:var(--pk)}
+input,select{border:1px solid var(--bd);background:var(--card);border-radius:10px;padding:8px;width:100%}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;align-items:end}
+label{font-size:11px;color:var(--mu)}
+.tb{overflow-x:auto}table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;min-width:640px}
+th{background:var(--pk);text-align:left;font-weight:600}th,td{padding:8px;border-bottom:1px solid var(--bd);white-space:nowrap}td.r,th.r{text-align:right}
+td input,td select{padding:4px;width:auto}
+.badge{padding:2px 8px;border-radius:99px;background:var(--lt)}
+.note{background:var(--pk);border-radius:14px;padding:12px;margin-top:12px}
+.bar{background:var(--rose);border-radius:6px 6px 0 0;min-height:2px;width:100%}
+.chart{display:flex;gap:6px;align-items:flex-end;height:140px}.chart div{flex:1;text-align:center;font-size:10px;color:var(--mu);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.hm{text-align:center;font-size:12px;padding:6px}
+</style></head><body><div class="w">
+<h1>🛍️ LIVE BENTA TRACKER</h1><p class="sub">Track Every Claim • Know Every Buyer • Calculate Your Real Sales</p>
+<nav id="nav"></nav><div id="v"></div></div>
+<script>
+const ST={CLAIMED:'🟡',PAID:'🟢',SHIPPED:'🔵',RTS:'🔴',CANCELLED:'⚫'};
+const REASONS=['Failed delivery','Customer refused','Unclaimed parcel','Wrong item','Customer cancellation','Other'];
+const TABS=[['home','🏠 HOME'],['claims','📝 CLAIMS'],['buyers','👥 BUYERS'],['rts','📦 RTS'],['reports','📊 SALES & REPORTS'],['calc','🧮 CALCULATOR'],['prices','🏷️ PRICE LIST'],['guide','⚙️ GUIDE']];
+const P=n=>'₱'+Number(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const iso=d=>d.toISOString().slice(0,10);
+const today=iso(new Date());
+const off=n=>{const d=new Date();d.setDate(d.getDate()-n);return iso(d)};
+let S={tab:'home',date:today,claims:[
+{date:today,product:'Pants',size:'29',variant:'L39',price:128,qty:1,buyer:'Joyjoy',status:'CLAIMED'},
+{date:today,product:'Pants',size:'30',variant:'L40',price:128,qty:1,buyer:'Reflex',status:'CLAIMED'},
+{date:today,product:'Blouse',size:'M',variant:'—',price:250,qty:1,buyer:'Reflex',status:'RTS',reason:'Failed delivery'},
+{date:today,product:'T-Shirt',size:'L',variant:'—',price:199,qty:2,buyer:'Reflex',status:'PAID'},
+{date:today,product:'Bags',size:'—',variant:'Black',price:350,qty:1,buyer:'Anna',status:'SHIPPED'},
+{date:today,product:'Pants',size:'28',variant:'L38',price:128,qty:1,buyer:'Anna',status:'CANCELLED'},
+{date:off(1),product:'Blouse',size:'S',variant:'—',price:250,qty:3,buyer:'Mika',status:'PAID'},
+{date:off(2),product:'Pants',size:'30',variant:'L40',price:128,qty:5,buyer:'Lea',status:'SHIPPED'},
+{date:off(2),product:'Bags',size:'—',variant:'Tan',price:350,qty:1,buyer:'Mika',status:'RTS',reason:'Customer refused'},
+{date:off(35),product:'T-Shirt',size:'M',variant:'—',price:199,qty:10,buyer:'Lea',status:'PAID'}],
+prices:[{product:'Pants',variant:'28–32',price:128},{product:'T-Shirt',variant:'S–XL',price:199},{product:'Blouse',variant:'S–L',price:250},{product:'Bags',variant:'Any',price:350}]};
+try{const s=JSON.parse(localStorage.getItem('lbt')||'null');if(s&&s.claims){S.claims=s.claims;S.prices=s.prices}}catch(e){}
+const save=()=>{try{localStorage.setItem('lbt',JSON.stringify({claims:S.claims,prices:S.prices}))}catch(e){}};
+const tot=c=>c.price*c.qty;
+function stats(rows){const r={claimed:0,rts:0,can:0,items:0,paid:0,ship:0,rtsItems:0,buyers:new Set()};
+rows.forEach(c=>{const t=tot(c);r.claimed+=t;r.buyers.add(c.buyer.toLowerCase());
+if(c.status=='RTS'){r.rts+=t;r.rtsItems+=+c.qty}else if(c.status=='CANCELLED')r.can+=t;else r.items+=+c.qty;
+if(c.status=='PAID')r.paid++;if(c.status=='SHIPPED')r.ship++});
+r.final=r.claimed-r.rts-r.can;r.nb=r.buyers.size;return r}
+const day=d=>S.claims.filter(c=>c.date==d);
+const card=(l,v,c='')=>`<div class="card ${c}"><small>${l}</small><b>${v}</b></div>`;
+function cards(s){return `<div class="grid">${card('💰 Total Claimed Sales',P(s.claimed))+card('🛍️ Total Items',s.items)+card('👥 Total Buyers',s.nb)+card('📦 RTS Amount',P(s.rts))+card('❌ Cancelled Amount',P(s.can))+card('💵 Final Sales',P(s.final),'fin')}</div>`}
+function nav(){document.getElementById('nav').innerHTML=TABS.map(t=>`<button class="${S.tab==t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('')}
+function go(t){S.tab=t;render()}
+function set(i,k,v){S.claims[i][k]=v;save();render()}
+function del(i){S.claims.splice(i,1);save();render()}
+const sel=(i,v)=>`<select onchange="set(${i},'status',this.value)">${Object.keys(ST).map(k=>`<option ${k==v?'selected':''} value="${k}">${ST[k]} ${k}</option>`).join('')}</select>`;
+function render(){nav();const v=document.getElementById('v');v.innerHTML=({home,claims,buyers,rts,reports,calc,prices,guide}[S.tab])();if(S.tab=='buyers')bl();if(S.tab=='calc')calcRun();}
+function home(){const s=stats(day(today));
+return `<h2>TODAY'S PERFORMANCE</h2>${cards(s)}<h2>Where to?</h2><div class="grid">${TABS.slice(1).map(t=>`<button class="card big" onclick="go('${t[0]}')">${t[1]}</button>`).join('')}</div><div class="note">You don't need to calculate everything manually. The tracker does it for you.</div>`}
+function claims(){return `<h2>📝 ADD NEW CLAIM</h2><div class="card"><div class="form">
+<div><label>Date</label><input type="date" id="fd" value="${today}"></div>
+<div><label>Product</label><input id="fp" list="pl" oninput="pick()"><datalist id="pl">${S.prices.map(p=>`<option>${p.product}`).join('')}</datalist></div>
+<div><label>Size</label><input id="fs"></div><div><label>Length/Variant</label><input id="fv"></div>
+<div><label>Price (₱)</label><input id="fpr" type="number" min="0" oninput="pv()"></div>
+<div><label>Qty</label><input id="fq" type="number" min="1" value="1" oninput="pv()"></div>
+<div><label>Buyer</label><input id="fb"></div>
+<div><label>Status</label><select id="fst">${Object.keys(ST).map(k=>`<option>${k}</option>`)}</select></div>
+<div><label>Item Total</label><b id="ft">₱0.00</b></div><div><button class="btn pri" onclick="add()">+ ADD</button></div></div></div>
+<h2>Claims List</h2><div class="tb"><table><tr><th>Date</th><th>Product</th><th>Size</th><th>Length/Variant</th><th class="r">Price</th><th class="r">Qty</th><th>Buyer</th><th>Status</th><th class="r">Item Total</th><th></th></tr>
+${S.claims.map((c,i)=>[c,i]).sort((a,b)=>b[0].date.localeCompare(a[0].date)).map(([c,i])=>`<tr><td>${c.date}</td><td>${c.product}</td><td>${c.size}</td><td>${c.variant}</td><td class="r"><input type="number" style="width:80px" value="${c.price}" onchange="set(${i},'price',+this.value)"></td><td class="r"><input type="number" style="width:60px" value="${c.qty}" onchange="set(${i},'qty',+this.value)"></td><td>${c.buyer}</td><td>${sel(i,c.status)}</td><td class="r"><b>${P(tot(c))}</b></td><td><button class="btn" onclick="del(${i})">🗑</button></td></tr>`).join('')}</table></div>`}
+function pick(){const p=S.prices.find(x=>x.product.toLowerCase()==fp.value.toLowerCase());if(p){fpr.value=p.price;pv()}}
+function pv(){ft.textContent=P((+fpr.value||0)*(+fq.value||0))}
+function add(){if(!fp.value||!fb.value||!fpr.value)return alert('Please fill Product, Price and Buyer.');
+S.claims.push({date:fd.value,product:fp.value,size:fs.value||'—',variant:fv.value||'—',price:+fpr.value,qty:+fq.value||1,buyer:fb.value.trim(),status:fst.value});save();render()}
+function buyers(){return `<h2>👥 BUYER TOTALS</h2><input id="bq" placeholder="🔍 Search Buyer / Username" oninput="bl()"><div id="bl" style="margin-top:10px" class="grid"></div>`}
+function bl(){const q=bq.value.toLowerCase(),m={};S.claims.forEach(c=>{const k=c.buyer.toLowerCase();(m[k]=m[k]||[]).push(c)});
+bl_.innerHTML;}
+Object.defineProperty(window,'bl_',{get(){return document.getElementById('bl')}});
+bl=function(){const q=(document.getElementById('bq')||{value:''}).value.toLowerCase(),m={};S.claims.forEach(c=>{const k=c.buyer.toLowerCase();(m[k]=m[k]||[]).push(c)});
+document.getElementById('bl').innerHTML=Object.keys(m).filter(k=>k.includes(q)).map(k=>{const r=m[k],s=stats(r);return `<div class="card"><b>${r[0].buyer.toUpperCase()}</b><p class="sub">Items Claimed: ${r.reduce((a,c)=>a+ +c.qty,0)}<br>Total Claimed: ${P(s.claimed)}<br>RTS: ${P(s.rts)}<br>Cancelled: ${P(s.can)}</p><div class="badge fin"><b>FINAL SALES: ${P(s.final)}</b></div></div>`}).join('')||'<p class="sub">No buyer found.</p>'}
+function rts(){const r=S.claims.map((c,i)=>[c,i]).filter(x=>x[0].status=='RTS'),s=stats(r.map(x=>x[0]));
+return `<h2>📦 RTS / RETURN TO SELLER</h2><div class="grid">${card('📦 RTS ITEMS',s.rtsItems)+card('💰 RTS AMOUNT',P(s.rts),'fin')+card('👥 BUYERS WITH RTS',s.nb)}</div>
+<p class="sub">To add an RTS, change a claim's status to 🔴 RTS in the Claims list.</p><div class="tb"><table><tr><th>Date</th><th>Buyer</th><th>Product</th><th>Size</th><th class="r">Price</th><th class="r">Qty</th><th class="r">RTS Amount</th><th>RTS Reason</th><th>Status</th></tr>
+${r.map(([c,i])=>`<tr><td>${c.date}</td><td>${c.buyer}</td><td>${c.product}</td><td>${c.size}</td><td class="r">${P(c.price)}</td><td class="r">${c.qty}</td><td class="r"><b>${P(tot(c))}</b></td><td><select onchange="S.claims[${i}].reason=this.value;save()">${REASONS.map(x=>`<option ${x==c.reason?'selected':''}>${x}</option>`)}</select></td><td>${sel(i,c.status)}</td></tr>`).join('')}</table></div>`}
+function reports(){const d=new Date(S.date+'T00:00'),wd=(d.getDay()+6)%7,mon=new Date(d);mon.setDate(d.getDate()-wd);
+const days=[...Array(7)].map((_,k)=>{const x=new Date(mon);x.setDate(mon.getDate()+k);return iso(x)});
+const s=stats(day(S.date)),ws=stats(S.claims.filter(c=>days.includes(c.date))),yr=S.date.slice(0,4);
+const mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const ms=mn.map((n,k)=>[n,stats(S.claims.filter(c=>c.date.slice(0,7)==yr+'-'+String(k+1).padStart(2,'0')))]);
+const mx=Math.max(1,...ms.map(x=>x[1].final));const ya=stats(S.claims.filter(c=>c.date.slice(0,4)==yr));
+const tr=(n,s)=>`<tr><td>${n}</td><td class="r">${P(s.claimed)}</td><td class="r">${P(s.rts)}</td><td class="r">${P(s.can)}</td><td class="r"><b>${P(s.final)}</b></td></tr>`;
+const hd='<tr><th>Period</th><th class="r">Claimed</th><th class="r">RTS</th><th class="r">Cancelled</th><th class="r">Final Sales</th></tr>';
+const pm={},sz={};S.claims.filter(c=>c.status!='RTS'&&c.status!='CANCELLED').forEach(c=>{const p=pm[c.product]=pm[c.product]||{q:0,s:0};p.q+=+c.qty;p.s+=tot(c);if(c.size!='—')sz[c.size]=(sz[c.size]||0)+ +c.qty});
+const pe=Object.entries(pm),top=[...pe].sort((a,b)=>b[1].q-a[1].q)[0],rev=[...pe].sort((a,b)=>b[1].s-a[1].s)[0],zs=Object.entries(sz).sort((a,b)=>b[1]-a[1])[0];
+return `<h2>📊 SALES DASHBOARD & DAILY SALES</h2><label>Select date</label><input type="date" value="${S.date}" onchange="S.date=this.value;render()" style="max-width:200px">
+<p class="sub">FINAL SALES = TOTAL CLAIMED − RTS − CANCELLED</p>${cards(s)}<div class="grid" style="margin-top:10px">${card('✅ Paid Orders',s.paid)+card('🚚 Shipped Orders',s.ship)}</div>
+<h2>📈 WEEKLY SALES</h2><div class="tb"><table>${hd}${days.map((x,k)=>tr(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][k]+' '+x.slice(5),stats(day(x)))).join('')}<tr><td><b>WEEKLY TOTAL</b></td><td class="r">${P(ws.claimed)}</td><td class="r">${P(ws.rts)}</td><td class="r">${P(ws.can)}</td><td class="r"><b>${P(ws.final)}</b></td></tr></table></div>
+<h2>🗓️ MONTHLY SALES ${yr}</h2><div class="card chart">${ms.map(([n,s])=>`<div><span>${s.final?Math.round(s.final):''}</span><div class="bar" style="height:${s.final/mx*100}%;flex:none"></div>${n.slice(0,3)}</div>`).join('')}</div><br>
+<div class="tb"><table>${hd}${ms.map(([n,s])=>tr(n,s)).join('')}</table></div>
+<div class="grid" style="margin-top:10px">${card('💰 Total Final Sales',P(ya.final))+card('📦 Total RTS',P(ya.rts))+card('❌ Total Cancellations',P(ya.can))+card('🛍️ Total Items Sold',ya.items)}</div>
+<h2>🏆 PRODUCT PERFORMANCE</h2><div class="grid">${card('Top Selling Product',top?top[0]:'—')+card('Highest Revenue Product',rev?rev[0]:'—')+card('Most Frequently Sold Size',zs?zs[0]:'—')}</div><br>
+<div class="tb"><table><tr><th>Product</th><th class="r">Items Sold</th><th class="r">Sales</th></tr>${pe.map(([n,p])=>`<tr><td>${n}</td><td class="r">${p.q}</td><td class="r">${P(p.s)}</td></tr>`).join('')}</table></div>`}
+function calc(){return `<h2>🧮 QUICK CALCULATOR</h2><div class="grid"><div class="card"><label>PRODUCT</label><input id="c1" value="Pants"><label>PRICE</label><input id="c2" type="number" value="128" oninput="calcRun()"><label>QUANTITY</label><input id="c3" type="number" value="3" oninput="calcRun()"><p class="sub">AUTOMATIC TOTAL</p><b style="font-size:26px" id="r1"></b><p class="sub" id="f1"></p></div>
+<div class="card"><label>PRICE</label><input id="d1" type="number" value="128" oninput="calcRun()"><label>QUANTITY</label><input id="d2" type="number" value="5" oninput="calcRun()"><label>RTS QUANTITY</label><input id="d3" type="number" value="1" oninput="calcRun()"><p class="sub" id="r2"></p><b style="font-size:26px" id="r3"></b></div></div>`}
+function calcRun(){const a=+c2.value||0,b=+c3.value||0;r1.textContent=P(a*b);f1.textContent=`${P(a).replace('.00','')} × ${b} = ${P(a*b).replace('.00','')}`;
+const p=+d1.value||0,q=+d2.value||0,r=+d3.value||0;r2.innerHTML=`Gross Amount: ${P(p*q)}<br>RTS Amount: ${P(p*r)}<br>FINAL AMOUNT:`;r3.textContent=P(p*(q-r))}
+function prices(){return `<h2>🏷️ PRODUCT PRICE LIST</h2><p class="sub">Saved prices fill in automatically when you pick a product in Claims.</p><div class="card"><div class="form"><div><label>Product</label><input id="pp"></div><div><label>Size/Variant</label><input id="pv2"></div><div><label>Price</label><input id="ppr" type="number"></div><div><button class="btn pri" onclick="ap()">+ SAVE</button></div></div></div><br>
+<div class="tb"><table><tr><th>Product</th><th>Size/Variant</th><th class="r">Price</th><th></th></tr>${S.prices.map((p,i)=>`<tr><td>${p.product}</td><td>${p.variant}</td><td class="r">${P(p.price)}</td><td><button class="btn" onclick="S.prices.splice(${i},1);save();render()">🗑</button></td></tr>`).join('')}</table></div>`}
+function ap(){if(!pp.value||!ppr.value)return;S.prices.push({product:pp.value,variant:pv2.value||'Any',price:+ppr.value});save();render()}
+function guide(){return `<h2>⚙️ QUICK START GUIDE</h2><div class="grid">${['Add your product and price.','Enter the buyer\'s username and quantity.','Update the order status as Paid, Shipped, RTS, or Cancelled.','Check your dashboard to see your real sales.'].map((t,i)=>card('STEP '+(i+1),`<span style="font-size:14px;font-weight:400">${t}</span>`)).join('')}</div>
+<h2>Status Rules</h2><div class="tb"><table><tr><th>Status</th><th>Effect</th></tr><tr><td>🟡 CLAIMED</td><td>Included in claimed sales</td></tr><tr><td>🟢 PAID</td><td>Counted as paid order (still counted once in sales)</td></tr><tr><td>🔵 SHIPPED</td><td>Counted as shipped order</td></tr><tr><td>🔴 RTS</td><td>Deducted from final sales</td></tr><tr><td>⚫ CANCELLED</td><td>Deducted from final sales</td></tr></table></div>
+<div class="note">You don't need to calculate everything manually. The tracker does it for you.</div><br><button class="btn" onclick="if(confirm('Reset all data to sample data?')){try{localStorage.removeItem('lbt')}catch(e){};location.reload()}">Reset sample data</button>`}
+render();
+</script></body></html>
